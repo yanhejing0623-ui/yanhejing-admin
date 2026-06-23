@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>硯赫科技｜管理後台</title>
+
+<link rel="stylesheet" href="admin.css">
+
+</head>
+<body>
+
+<!-- =======================
+登入頁
+======================= -->
+
+<div id="loginPage" class="login-page">
+
+  <div class="login-card">
+
+    <h1>硯赫科技</h1>
+
+    <p>驗屋預約管理系統</p>
+
+    <input
+      id="loginUsername"
+      placeholder="帳號"
+    >
+
+    <input
+      id="loginPassword"
+      type="password"
+      placeholder="密碼"
+    >
+
+    <button onclick="login()">
+      登入
+    </button>
+
+    <div class="login-divider">
+      尚未有帳號？
+    </div>
+
+    <button
+      class="secondary-btn"
+      onclick="showRegister()"
+    >
+      申請帳號
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =======================
+註冊頁
+======================= -->
+
+<div
+  id="registerPage"
+  class="login-page hidden"
+>
+
+  <div class="login-card">
+
+    <h1>申請帳號</h1>
+
+    <p>送出後等待管理員核准</p>
+
+    <input
+      id="registerName"
+      placeholder="姓名"
+    >
+
+    <input
+      id="registerUsername"
+      placeholder="帳號"
+    >
+
+    <input
+      id="registerPassword"
+      type="password"
+      placeholder="密碼"
+    >
+
+    <button onclick="registerAccount()">
+      送出申請
+    </button>
+
+    <button
+      class="secondary-btn"
+      onclick="showLogin()"
+    >
+      返回登入
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =======================
+主後台
+======================= -->
+
+<div
+  id="adminLayout"
+  class="admin-layout hidden"
+>
+
+  <!-- 側邊選單 -->
+
+  <aside class="sidebar">
+
+    <div class="logo">
+      硯赫科技
+    </div>
+
+    <nav>
+
+      <button
+        class="menu-btn active"
+        onclick="showPage('dashboardPage',this)"
+      >
+        📊 Dashboard
+      </button>
+
+      <button
+        class="menu-btn"
+        onclick="showPage('bookingPage',this)"
+      >
+        📋 預約案件
+      </button>
+
+      <button
+        id="accountMenuBtn"
+        class="menu-btn hidden"
+        onclick="showPage('accountPage',this)"
+      >
+        👥 帳號管理
+      </button>
+
+    </nav>
+
+    <div class="sidebar-user">
+
+      <div id="currentUserName">
+        -
+      </div>
+
+      <div id="currentUserRole">
+        -
+      </div>
+
+      <button
+        class="logout-btn"
+        onclick="logout()"
+      >
+        登出
+      </button>
+
+    </div>
+
+  </aside>
+
+  <!-- 主內容 -->
+
+  <main class="content">
+
+    <!-- Dashboard -->
+
+    <section
+      id="dashboardPage"
+      class="page"
+    >
+
+      <h2>Dashboard</h2>
+
+      <div class="stats-grid">
+
+        <div class="stat-card">
+          <div id="todayCount">0</div>
+          <span>今日預約</span>
+        </div>
+
+        <div class="stat-card">
+          <div id="monthCount">0</div>
+          <span>本月預約</span>
+        </div>
+
+        <div class="stat-card">
+          <div id="pendingCount">0</div>
+          <span>待聯絡</span>
+        </div>
+
+        <div class="stat-card">
+          <div id="doneCount">0</div>
+          <span>已完成</span>
+        </div>
+
+      </div>
+
+      <div class="card">
+
+        <h3>最新案件</h3>
+
+        <div id="recentBookings">
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 案件管理 -->
+
+    <section
+      id="bookingPage"
+      class="page hidden"
+    >
+
+      <div class="page-header">
+
+        <h2>預約案件管理</h2>
+
+        <input
+          id="bookingSearch"
+          placeholder="搜尋姓名、電話、建案"
+          onkeyup="filterBookings()"
+        >
+
+      </div>
+
+      <div
+        id="bookingTable"
+        class="table-container"
+      >
+
+      </div>
+
+    </section>
+
+    <!-- 帳號管理 -->
+
+    <section
+      id="accountPage"
+      class="page hidden"
+    >
+
+      <h2>帳號管理</h2>
+
+      <div
+        id="accountTable"
+        class="table-container"
+      >
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+<!-- =======================
+案件詳情
+======================= -->
+
+<div
+  id="bookingModal"
+  class="modal hidden"
+>
+
+  <div class="modal-content">
+
+    <div class="modal-header">
+
+      <h3>
+        案件詳情
+      </h3>
+
+      <button
+        class="close-btn"
+        onclick="closeModal()"
+      >
+        ✕
+      </button>
+
+    </div>
+
+    <div id="bookingDetail">
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="admin.js"></script>
+
+</body>
+</html>

@@ -13,27 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-/* =========================
-   共用 API
-========================= */
-
 async function apiPost(action, payload = {}) {
-  const body = {
-    action,
-    ...payload
-  };
-
   const res = await fetch(API_URL, {
     method: "POST",
-    body: JSON.stringify(body)
+    body: JSON.stringify({ action, ...payload })
   });
 
   return await res.json();
 }
-
-/* =========================
-   登入 / 註冊
-========================= */
 
 function showRegister() {
   document.getElementById("loginPage").classList.add("hidden");
@@ -60,14 +47,7 @@ async function registerAccount() {
 
   try {
     const result = await apiPost("registerAdmin", {
-      data: {
-        name,
-        username,
-        password,
-        phone,
-        email,
-        lineUserId
-      }
+      data: { name, username, password, phone, email, lineUserId }
     });
 
     if (result.ok) {
@@ -101,10 +81,7 @@ async function login() {
 
   try {
     const result = await apiPost("loginAdmin", {
-      data: {
-        username,
-        password
-      }
+      data: { username, password }
     });
 
     if (!result.ok) {
@@ -114,7 +91,6 @@ async function login() {
 
     adminToken = result.token;
     currentUser = result.user;
-
     localStorage.setItem("yh_admin_token", adminToken);
 
     enterAdmin();
@@ -162,6 +138,8 @@ function enterAdmin() {
     document.getElementById("accountMenuBtn").classList.add("hidden");
   }
 
+  addBindLineButton();
+
   loadDashboard();
   loadBookings();
 
@@ -170,8 +148,39 @@ function enterAdmin() {
   }
 }
 
+function addBindLineButton() {
+  const box = document.querySelector(".sidebar-user");
+  if (!box) return;
+
+  let oldBtn = document.getElementById("bindMyLineBtn");
+  if (oldBtn) oldBtn.remove();
+
+  const btn = document.createElement("button");
+  btn.id = "bindMyLineBtn";
+  btn.className = "secondary-btn";
+  btn.style.marginBottom = "10px";
+  btn.innerText = "綁定我的 LINE";
+  btn.onclick = bindMyLine;
+
+  box.insertBefore(btn, box.querySelector(".logout-btn"));
+}
+
+function bindMyLine() {
+  if (!currentUser || !currentUser.username) {
+    alert("請先登入後台");
+    return;
+  }
+
+  localStorage.setItem("bind_username", currentUser.username);
+
+  location.href =
+    "bind.html?username=" + encodeURIComponent(currentUser.username);
+}
+
 function logout() {
   localStorage.removeItem("yh_admin_token");
+  localStorage.removeItem("bind_username");
+
   adminToken = "";
   currentUser = null;
   bookingsData = [];
@@ -181,10 +190,6 @@ function logout() {
   document.getElementById("registerPage").classList.add("hidden");
   document.getElementById("loginPage").classList.remove("hidden");
 }
-
-/* =========================
-   頁面切換
-========================= */
 
 function showPage(pageId, btn) {
   document.querySelectorAll(".page").forEach(page => {
@@ -197,26 +202,12 @@ function showPage(pageId, btn) {
     item.classList.remove("active");
   });
 
-  if (btn) {
-    btn.classList.add("active");
-  }
+  if (btn) btn.classList.add("active");
 
-  if (pageId === "dashboardPage") {
-    loadDashboard();
-  }
-
-  if (pageId === "bookingPage") {
-    loadBookings();
-  }
-
-  if (pageId === "accountPage") {
-    loadAccounts();
-  }
+  if (pageId === "dashboardPage") loadDashboard();
+  if (pageId === "bookingPage") loadBookings();
+  if (pageId === "accountPage") loadAccounts();
 }
-
-/* =========================
-   Dashboard
-========================= */
 
 async function loadDashboard() {
   try {
@@ -231,20 +222,11 @@ async function loadDashboard() {
 
     const stats = result.stats || {};
 
-    document.getElementById("todayCount").innerText =
-      stats.todayCount || 0;
-
-    document.getElementById("monthCount").innerText =
-      stats.monthCount || 0;
-
-    document.getElementById("pendingCount").innerText =
-      stats.pendingCount || 0;
-
-    document.getElementById("scheduledCount").innerText =
-      stats.scheduledCount || 0;
-
-    document.getElementById("doneCount").innerText =
-      stats.doneCount || 0;
+    document.getElementById("todayCount").innerText = stats.todayCount || 0;
+    document.getElementById("monthCount").innerText = stats.monthCount || 0;
+    document.getElementById("pendingCount").innerText = stats.pendingCount || 0;
+    document.getElementById("scheduledCount").innerText = stats.scheduledCount || 0;
+    document.getElementById("doneCount").innerText = stats.doneCount || 0;
 
     renderRecentBookings(result.recentBookings || []);
 
@@ -256,7 +238,6 @@ async function loadDashboard() {
 
 function renderRecentBookings(list) {
   const box = document.getElementById("recentBookings");
-
   if (!box) return;
 
   if (!list.length) {
@@ -292,17 +273,9 @@ function renderRecentBookings(list) {
     `;
   });
 
-  html += `
-      </tbody>
-    </table>
-  `;
-
+  html += `</tbody></table>`;
   box.innerHTML = html;
 }
-
-/* =========================
-   案件管理
-========================= */
 
 async function loadBookings() {
   try {
@@ -326,7 +299,6 @@ async function loadBookings() {
 
 function renderBookings(list) {
   const box = document.getElementById("bookingTable");
-
   if (!box) return;
 
   if (!list.length) {
@@ -374,17 +346,12 @@ function renderBookings(list) {
     `;
   });
 
-  html += `
-      </tbody>
-    </table>
-  `;
-
+  html += `</tbody></table>`;
   box.innerHTML = html;
 }
 
 function filterBookings() {
-  const keyword =
-    document.getElementById("bookingSearch").value.trim();
+  const keyword = document.getElementById("bookingSearch").value.trim();
 
   if (!keyword) {
     renderBookings(bookingsData);
@@ -400,9 +367,7 @@ function filterBookings() {
 }
 
 function openBookingDetailById(bookingId) {
-  const booking = bookingsData.find(
-    item => item["案件編號"] === bookingId
-  );
+  const booking = bookingsData.find(item => item["案件編號"] === bookingId);
 
   if (!booking) {
     alert("找不到案件");
@@ -417,7 +382,6 @@ function openBookingDetailById(bookingId) {
 
 function renderBookingDetail(item) {
   const box = document.getElementById("bookingDetail");
-
   const bookingId = item["案件編號"] || "";
 
   box.innerHTML = `
@@ -507,10 +471,6 @@ function closeModal() {
   document.getElementById("bookingModal").classList.add("hidden");
 }
 
-/* =========================
-   帳號管理
-========================= */
-
 async function loadAccounts() {
   if (!currentUser || currentUser.role !== "老闆") return;
 
@@ -535,7 +495,6 @@ async function loadAccounts() {
 
 function renderAccounts(list) {
   const box = document.getElementById("accountTable");
-
   if (!box) return;
 
   if (!list.length) {
@@ -573,7 +532,6 @@ function renderAccounts(list) {
       <tr>
         <td>${escapeHtml(username)}</td>
         <td>${escapeHtml(item["名稱"] || "")}</td>
-
         <td>
           <select class="role-select" onchange="updateAccountRole('${escapeAttr(username)}',this.value)">
             ${roleOption("老闆", role)}
@@ -582,10 +540,8 @@ function renderAccounts(list) {
             ${roleOption("客服", role)}
           </select>
         </td>
-
         <td>${renderAccountStatus(status)}</td>
         <td>${enabled ? "TRUE" : "FALSE"}</td>
-
         <td>
           <label>
             <input
@@ -597,10 +553,8 @@ function renderAccounts(list) {
             ${receive ? "TRUE" : "FALSE"}
           </label>
         </td>
-
         <td>${escapeHtml(item["LINE UserId"] || "")}</td>
         <td>${escapeHtml(formatDateTime(item["建立時間"]))}</td>
-
         <td>
           <div class="account-actions">
             <button class="approve-btn" onclick="approveAccount('${escapeAttr(username)}')">核准</button>
@@ -613,63 +567,9 @@ function renderAccounts(list) {
     `;
   });
 
-  tableHtml += `
-        </tbody>
-      </table>
-    </div>
-  `;
+  tableHtml += `</tbody></table></div>`;
 
-  let cardHtml = `
-    <div class="mobile-account-card">
-  `;
-
-  list.forEach(item => {
-    const username = item["帳號"] || "";
-    const status = item["狀態"] || "";
-    const role = item["角色"] || "客服";
-    const enabled = isTrue(item["啟用"]);
-    const receive = isTrue(item["接收通知"]);
-
-    cardHtml += `
-      <div class="account-card">
-        <h3>${escapeHtml(item["名稱"] || username)}</h3>
-        <p>帳號：${escapeHtml(username)}</p>
-        <p>狀態：${statusText(status)}</p>
-        <p>啟用：${enabled ? "TRUE" : "FALSE"}</p>
-        <p>LINE：${escapeHtml(item["LINE UserId"] || "未填")}</p>
-
-        <select class="role-select" onchange="updateAccountRole('${escapeAttr(username)}',this.value)">
-          ${roleOption("老闆", role)}
-          ${roleOption("主管", role)}
-          ${roleOption("驗屋師", role)}
-          ${roleOption("客服", role)}
-        </select>
-
-        <label>
-          <input
-            type="checkbox"
-            class="notify-check"
-            ${receive ? "checked" : ""}
-            onchange="updateAccountNotification('${escapeAttr(username)}',this.checked)"
-          >
-          接收 LINE 通知：${receive ? "TRUE" : "FALSE"}
-        </label>
-
-        <div class="account-actions">
-          <button class="approve-btn" onclick="approveAccount('${escapeAttr(username)}')">核准</button>
-          <button class="reject-btn" onclick="rejectAccount('${escapeAttr(username)}')">拒絕</button>
-          <button class="disable-btn" onclick="disableAccount('${escapeAttr(username)}')">停用</button>
-          <button class="delete-btn" onclick="deleteAccount('${escapeAttr(username)}')">刪除</button>
-        </div>
-      </div>
-    `;
-  });
-
-  cardHtml += `
-    </div>
-  `;
-
-  box.innerHTML = tableHtml + cardHtml;
+  box.innerHTML = tableHtml;
 }
 
 function roleOption(value, current) {
@@ -778,13 +678,8 @@ async function updateAccountNotification(username, receiveNotification) {
   }
 }
 
-/* =========================
-   小工具
-========================= */
-
 function renderStatus(status) {
   const s = status || "待聯絡";
-
   let cls = "status-pending";
 
   if (s === "已聯絡") cls = "status-contacted";

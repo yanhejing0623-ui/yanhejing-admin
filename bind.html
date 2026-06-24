@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>LINE綁定</title>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+
+<body>
+
+<h2>LINE綁定中...</h2>
+
+<script>
+
+const LIFF_ID = "2010501580-tk9UAT4D";
+
+async function init(){
+
+  await liff.init({
+    liffId: LIFF_ID
+  });
+
+  if(!liff.isLoggedIn()){
+    liff.login();
+    return;
+  }
+
+  const profile = await liff.getProfile();
+
+  document.body.innerHTML = `
+    <h2>綁定成功</h2>
+    <p>${profile.displayName}</p>
+    <p>${profile.userId}</p>
+  `;
+
+}
+
+init();
+
+</script>
+
+</body>
+</html>

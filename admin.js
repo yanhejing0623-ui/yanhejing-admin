@@ -1,5 +1,5 @@
 const API_URL =
-"https://script.google.com/macros/s/AKfycbwuvsfK1Jr83qaxbctIk2ajgnuO1RoD6S0Xzd4XxPO9xPOAO_NMafbUgRYEmpROIA7hxJg/exec?action=init";
+"https://script.google.com/macros/s/AKfycbywgbwW0jxYuLCboHD0TdM8aUynDTZ3dxpUg20Qqam2zJN7d2sCj5ri_iHPaqfqpSPSzQ/exec";
 
 let adminToken = localStorage.getItem("yh_admin_token") || "";
 let currentUser = null;

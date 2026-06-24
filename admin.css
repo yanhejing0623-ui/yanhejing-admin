@@ -1,488 +1,483 @@
-:root{
-  --primary:#00384D;
-  --primary2:#0D5564;
-  --accent:#D7B36A;
-  --bg:#F4F7F9;
-  --line:#E6EDF1;
-  --text:#173847;
+* {
+  box-sizing: border-box;
 }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+body {
+  margin: 0;
+  font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+  background: #f5f8fa;
+  color: #173847;
 }
 
-body{
-  font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,sans-serif;
-  background:var(--bg);
-  color:var(--text);
+.hidden {
+  display: none !important;
 }
 
-/* =====================
-登入頁
-===================== */
-
-.login-page{
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:24px;
+.login-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #00384D, #0D5564);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
 }
 
-.login-card{
-  width:100%;
-  max-width:420px;
-  background:white;
-  padding:32px;
-  border-radius:24px;
-  box-shadow:0 15px 40px rgba(0,56,77,.12);
+.login-card {
+  width: 380px;
+  max-width: 100%;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
 }
 
-.login-card h1{
-  text-align:center;
-  color:var(--primary);
-  margin-bottom:10px;
+.login-card h1 {
+  margin: 0 0 8px;
+  color: #00384D;
+  font-size: 30px;
 }
 
-.login-card p{
-  text-align:center;
-  color:#6F8088;
-  margin-bottom:24px;
+.login-card p {
+  margin: 0 0 24px;
+  color: #6b7280;
 }
 
-.login-card input{
-  width:100%;
-  border:1px solid #DDE7EB;
-  border-radius:14px;
-  padding:15px;
-  margin-bottom:12px;
-  font-size:15px;
+input,
+select,
+button {
+  font-family: inherit;
+  font-size: 15px;
 }
 
-.login-card button{
-  width:100%;
-  border:none;
-  border-radius:14px;
-  padding:15px;
-  background:linear-gradient(
-    135deg,
-    #E2C477,
-    var(--accent)
-  );
-  color:white;
-  font-weight:800;
-  cursor:pointer;
+input,
+select {
+  width: 100%;
+  border: 1px solid #d9e2e7;
+  border-radius: 14px;
+  padding: 13px 14px;
+  margin-bottom: 12px;
+  background: #ffffff;
+  color: #173847;
 }
 
-.login-divider{
-  text-align:center;
-  margin:18px 0;
-  color:#90A0A8;
+button {
+  border: none;
+  border-radius: 14px;
+  padding: 11px 16px;
+  background: #0D5564;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
 }
 
-.secondary-btn{
-  margin-top:10px;
-  background:#EDF4F6 !important;
-  color:var(--primary) !important;
+button:hover {
+  opacity: 0.9;
 }
 
-/* =====================
-主架構
-===================== */
-
-.admin-layout{
-  display:flex;
-  min-height:100vh;
+.login-card button {
+  width: 100%;
 }
 
-/* =====================
-側邊欄
-===================== */
-
-.sidebar{
-  width:260px;
-  background:#00384D;
-  color:white;
-  display:flex;
-  flex-direction:column;
+.secondary-btn {
+  background: #E5EEF2;
+  color: #173847;
 }
 
-.logo{
-  padding:28px 24px;
-  font-size:24px;
-  font-weight:900;
-  border-bottom:1px solid rgba(255,255,255,.1);
+.login-divider {
+  text-align: center;
+  margin: 18px 0 10px;
+  color: #6b7280;
+  font-size: 14px;
 }
 
-.sidebar nav{
-  flex:1;
-  padding:18px;
+.admin-layout {
+  min-height: 100vh;
+  display: flex;
 }
 
-.menu-btn{
-  width:100%;
-  text-align:left;
-  border:none;
-  background:none;
-  color:white;
-  padding:14px 16px;
-  border-radius:14px;
-  margin-bottom:8px;
-  cursor:pointer;
-  font-size:15px;
+.sidebar {
+  width: 260px;
+  background: #00384D;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
 }
 
-.menu-btn:hover{
-  background:rgba(255,255,255,.08);
+.logo {
+  font-size: 26px;
+  font-weight: 900;
+  margin-bottom: 32px;
+  color: #D7B36A;
 }
 
-.menu-btn.active{
-  background:rgba(215,179,106,.18);
-  border:1px solid rgba(215,179,106,.4);
+nav {
+  display: grid;
+  gap: 10px;
 }
 
-.sidebar-user{
-  padding:20px;
-  border-top:1px solid rgba(255,255,255,.1);
+.menu-btn {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.15);
 }
 
-#currentUserName{
-  font-weight:800;
+.menu-btn.active,
+.menu-btn:hover {
+  background: #0D5564;
 }
 
-#currentUserRole{
-  margin-top:4px;
-  opacity:.8;
-  font-size:13px;
+.sidebar-user {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.2);
 }
 
-.logout-btn{
-  width:100%;
-  margin-top:14px;
-  border:none;
-  border-radius:12px;
-  padding:12px;
-  background:#D9534F;
-  color:white;
-  cursor:pointer;
+#currentUserName {
+  font-weight: 800;
+  margin-bottom: 4px;
 }
 
-/* =====================
-內容區
-===================== */
-
-.content{
-  flex:1;
-  padding:28px;
-  overflow:auto;
+#currentUserRole {
+  font-size: 14px;
+  color: #E5EEF2;
+  margin-bottom: 16px;
 }
 
-.page h2{
-  margin-bottom:20px;
-  color:var(--primary);
+.logout-btn {
+  width: 100%;
+  background: #991b1b;
 }
 
-/* =====================
-統計卡
-===================== */
-
-.stats-grid{
-  display:grid;
-  grid-template-columns:
-    repeat(auto-fit,minmax(180px,1fr));
-  gap:16px;
-  margin-bottom:24px;
+.content {
+  flex: 1;
+  padding: 28px;
+  overflow-x: hidden;
 }
 
-.stat-card{
-  background:white;
-  border-radius:20px;
-  padding:22px;
-  border:1px solid var(--line);
-  box-shadow:0 8px 18px rgba(0,56,77,.05);
+.page h2 {
+  margin-top: 0;
+  font-size: 28px;
+  color: #00384D;
 }
 
-.stat-card div{
-  font-size:34px;
-  font-weight:900;
-  color:var(--primary);
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-.stat-card span{
-  color:#6D7C84;
+.stat-card,
+.card,
+.notice-box {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
 }
 
-/* =====================
-卡片
-===================== */
-
-.card{
-  background:white;
-  border-radius:20px;
-  border:1px solid var(--line);
-  padding:20px;
+.stat-card div {
+  font-size: 34px;
+  font-weight: 900;
+  color: #0D5564;
 }
 
-.card h3{
-  margin-bottom:16px;
+.stat-card span {
+  color: #6b7280;
 }
 
-/* =====================
-案件表格
-===================== */
-
-.page-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  margin-bottom:18px;
+.card h3 {
+  margin-top: 0;
 }
 
-.page-header input{
-  width:320px;
-  max-width:100%;
-  border:1px solid #DDE7EB;
-  border-radius:14px;
-  padding:13px;
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
 }
 
-.table-container{
-  background:white;
-  border-radius:20px;
-  border:1px solid var(--line);
-  overflow:hidden;
+.page-header input {
+  max-width: 320px;
+  margin-bottom: 0;
 }
 
-table{
-  width:100%;
-  border-collapse:collapse;
+.notice-box {
+  margin-bottom: 16px;
+  color: #92400e;
+  background: #fef3c7;
 }
 
-th{
-  background:#F5F8FA;
-  color:var(--primary);
-  padding:14px;
-  text-align:left;
+.table-container {
+  background: white;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  overflow-x: auto;
 }
 
-td{
-  padding:14px;
-  border-top:1px solid #EEF3F5;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 780px;
 }
 
-tr:hover{
-  background:#FAFCFD;
+th,
+td {
+  padding: 13px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  font-size: 14px;
+  vertical-align: middle;
 }
 
-.view-btn{
-  border:none;
-  border-radius:10px;
-  padding:8px 12px;
-  background:#00384D;
-  color:white;
-  cursor:pointer;
+th {
+  color: #00384D;
+  font-weight: 900;
+  background: #F5F8FA;
 }
 
-/* =====================
-狀態標籤
-===================== */
-
-.status{
-  display:inline-block;
-  padding:6px 10px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:700;
+tr:hover {
+  background: #F5F8FA;
 }
 
-.status-pending{
-  background:#FFF3CD;
-  color:#856404;
+.empty {
+  color: #6b7280;
+  text-align: center;
+  padding: 30px;
 }
 
-.status-contacted{
-  background:#D1ECF1;
-  color:#0C5460;
+.status {
+  display: inline-flex;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
 }
 
-.status-scheduled{
-  background:#CCE5FF;
-  color:#004085;
+.status-pending {
+  background: #fef3c7;
+  color: #92400e;
 }
 
-.status-done{
-  background:#D4EDDA;
-  color:#155724;
+.status-contacted,
+.status-scheduled {
+  background: #dbeafe;
+  color: #1e40af;
 }
 
-.status-cancel{
-  background:#F8D7DA;
-  color:#721C24;
+.status-done {
+  background: #dcfce7;
+  color: #166534;
 }
 
-/* =====================
-案件詳情視窗
-===================== */
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.45);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:999;
+.status-cancel,
+.status-disabled,
+.status-rejected {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
-.modal-content{
-  width:95%;
-  max-width:800px;
-  max-height:90vh;
-  overflow:auto;
-  background:white;
-  border-radius:24px;
-  padding:24px;
+.view-btn,
+.approve-btn,
+.reject-btn,
+.disable-btn,
+.delete-btn,
+.small-btn {
+  padding: 7px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin: 2px;
 }
 
-.modal-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
+.view-btn {
+  background: #0D5564;
 }
 
-.close-btn{
-  border:none;
-  background:none;
-  font-size:24px;
-  cursor:pointer;
+.approve-btn {
+  background: #16a34a;
 }
 
-.detail-grid{
-  display:grid;
-  grid-template-columns:
-    repeat(2,1fr);
-  gap:14px;
+.reject-btn {
+  background: #d97706;
 }
 
-.detail-item{
-  background:#F7FAFB;
-  border-radius:12px;
-  padding:12px;
+.disable-btn {
+  background: #6b7280;
 }
 
-.detail-item label{
-  display:block;
-  color:#718089;
-  font-size:12px;
-  margin-bottom:4px;
+.delete-btn {
+  background: #dc2626;
 }
 
-.detail-item strong{
-  color:#00384D;
+.small-btn {
+  background: #0D5564;
 }
 
-.status-select{
-  width:100%;
-  margin-top:16px;
-  border:1px solid #DDE7EB;
-  border-radius:12px;
-  padding:12px;
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
-.save-btn{
-  width:100%;
-  margin-top:14px;
-  border:none;
-  border-radius:14px;
-  padding:14px;
-  background:var(--accent);
-  color:white;
-  font-weight:800;
-  cursor:pointer;
+.role-select {
+  min-width: 100px;
+  margin-bottom: 0;
+  padding: 8px 10px;
 }
 
-/* =====================
-帳號管理
-===================== */
-
-.account-actions{
-  display:flex;
-  gap:8px;
+.notify-check {
+  width: auto;
+  margin: 0 6px 0 0;
 }
 
-.approve-btn{
-  border:none;
-  background:#28A745;
-  color:white;
-  border-radius:10px;
-  padding:8px 12px;
-  cursor:pointer;
+.mobile-account-card {
+  display: none;
 }
 
-.reject-btn{
-  border:none;
-  background:#D9534F;
-  color:white;
-  border-radius:10px;
-  padding:8px 12px;
-  cursor:pointer;
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  z-index: 50;
 }
 
-/* =====================
-工具類
-===================== */
-
-.hidden{
-  display:none !important;
+.modal-content {
+  width: 850px;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
 }
 
-/* =====================
-手機版
-===================== */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-@media(max-width:768px){
+.close-btn {
+  width: auto;
+  background: #e5e7eb;
+  color: #173847;
+}
 
-  .admin-layout{
-    flex-direction:column;
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.detail-item {
+  background: #F5F8FA;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.detail-item label {
+  display: block;
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 5px;
+}
+
+.detail-item strong {
+  color: #173847;
+}
+
+.status-select {
+  max-width: 240px;
+}
+
+.save-btn {
+  width: auto;
+}
+
+@media (max-width: 900px) {
+  .admin-layout {
+    display: block;
   }
 
-  .sidebar{
-    width:100%;
+  .sidebar {
+    width: 100%;
+    border-radius: 0 0 24px 24px;
   }
 
-  .content{
-    padding:16px;
+  nav {
+    grid-template-columns: repeat(3, 1fr);
   }
 
-  .page-header{
-    flex-direction:column;
-    align-items:stretch;
+  .menu-btn {
+    text-align: center;
+    padding: 10px;
   }
 
-  .page-header input{
-    width:100%;
+  .sidebar-user {
+    margin-top: 18px;
   }
 
-  .detail-grid{
-    grid-template-columns:1fr;
+  .content {
+    padding: 18px;
   }
 
-  table{
-    font-size:13px;
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  th,
-  td{
-    padding:10px;
+  .page-header {
+    display: block;
   }
 
-  .stats-grid{
-    grid-template-columns:
-      repeat(2,1fr);
+  .page-header input {
+    max-width: 100%;
+    margin-top: 12px;
   }
 
+  table {
+    min-width: 720px;
+  }
+
+  .desktop-account-table {
+    display: none;
+  }
+
+  .mobile-account-card {
+    display: grid;
+    gap: 12px;
+  }
+
+  .account-card {
+    background: white;
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  }
+
+  .account-card h3 {
+    margin: 0 0 6px;
+  }
+
+  .account-card p {
+    margin: 4px 0;
+    color: #4b5563;
+  }
+
+  .account-card .account-actions {
+    margin-top: 12px;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
 }

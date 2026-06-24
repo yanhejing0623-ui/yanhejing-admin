@@ -1,5 +1,5 @@
 const API_URL =
-"https://script.google.com/macros/s/AKfycbyKxo7Crf8y8IVNFLFKWbFQ_xmv-VKg6m0iwaWBiPx9iui3laN8ZBoyyd0aD_w-YsjJXg/exec";
+"https://script.google.com/macros/s/AKfycbwuvsfK1Jr83qaxbctIk2ajgnuO1RoD6S0Xzd4XxO9xPOAO_NMafbUgRYEmpROIA7hxJg/exec";
 
 let adminToken = localStorage.getItem("yh_admin_token") || "";
 let currentUser = null;
@@ -49,6 +49,9 @@ async function registerAccount() {
   const name = document.getElementById("registerName").value.trim();
   const username = document.getElementById("registerUsername").value.trim();
   const password = document.getElementById("registerPassword").value.trim();
+  const phone = document.getElementById("registerPhone").value.trim();
+  const email = document.getElementById("registerEmail").value.trim();
+  const lineUserId = document.getElementById("registerLineUserId").value.trim();
 
   if (!name || !username || !password) {
     alert("請填寫姓名、帳號與密碼");
@@ -60,7 +63,10 @@ async function registerAccount() {
       data: {
         name,
         username,
-        password
+        password,
+        phone,
+        email,
+        lineUserId
       }
     });
 
@@ -71,6 +77,9 @@ async function registerAccount() {
       document.getElementById("registerName").value = "";
       document.getElementById("registerUsername").value = "";
       document.getElementById("registerPassword").value = "";
+      document.getElementById("registerPhone").value = "";
+      document.getElementById("registerEmail").value = "";
+      document.getElementById("registerLineUserId").value = "";
     } else {
       alert(result.message || "申請失敗");
     }
@@ -231,6 +240,9 @@ async function loadDashboard() {
     document.getElementById("pendingCount").innerText =
       stats.pendingCount || 0;
 
+    document.getElementById("scheduledCount").innerText =
+      stats.scheduledCount || 0;
+
     document.getElementById("doneCount").innerText =
       stats.doneCount || 0;
 
@@ -267,12 +279,14 @@ function renderRecentBookings(list) {
   `;
 
   list.forEach(item => {
+    const bookingId = item["案件編號"] || "";
+
     html += `
-      <tr onclick="openBookingDetailById('${item["案件編號"] || ""}')">
-        <td>${item["案件編號"] || ""}</td>
-        <td>${item["姓名"] || ""}</td>
-        <td>${item["方案"] || item["方案名稱"] || ""}</td>
-        <td>${formatDate(item["預約日期"])}</td>
+      <tr onclick="openBookingDetailById('${escapeAttr(bookingId)}')">
+        <td>${escapeHtml(bookingId)}</td>
+        <td>${escapeHtml(item["姓名"] || "")}</td>
+        <td>${escapeHtml(item["方案"] || item["方案名稱"] || "")}</td>
+        <td>${escapeHtml(formatDate(item["預約日期"]))}</td>
         <td>${renderStatus(item["狀態"])}</td>
       </tr>
     `;
@@ -341,21 +355,18 @@ function renderBookings(list) {
 
     html += `
       <tr>
-        <td>${bookingId}</td>
-        <td>${item["姓名"] || ""}</td>
+        <td>${escapeHtml(bookingId)}</td>
+        <td>${escapeHtml(item["姓名"] || "")}</td>
         <td>
-          <a href="tel:${item["電話"] || ""}">
-            ${item["電話"] || ""}
+          <a href="tel:${escapeAttr(item["電話"] || "")}">
+            ${escapeHtml(item["電話"] || "")}
           </a>
         </td>
-        <td>${item["方案"] || item["方案名稱"] || ""}</td>
-        <td>${formatDate(item["預約日期"])}</td>
+        <td>${escapeHtml(item["方案"] || item["方案名稱"] || "")}</td>
+        <td>${escapeHtml(formatDate(item["預約日期"]))}</td>
         <td>${renderStatus(item["狀態"])}</td>
         <td>
-          <button
-            class="view-btn"
-            onclick="openBookingDetailById('${bookingId}')"
-          >
+          <button class="view-btn" onclick="openBookingDetailById('${escapeAttr(bookingId)}')">
             查看
           </button>
         </td>
@@ -411,7 +422,6 @@ function renderBookingDetail(item) {
 
   box.innerHTML = `
     <div class="detail-grid">
-
       ${detailItem("案件編號", item["案件編號"])}
       ${detailItem("狀態", item["狀態"])}
       ${detailItem("姓名", item["姓名"])}
@@ -433,7 +443,6 @@ function renderBookingDetail(item) {
       ${detailItem("統編", item["統編"])}
       ${detailItem("抬頭", item["抬頭"])}
       ${detailItem("備註", item["備註"])}
-
     </div>
 
     <select id="detailStatus" class="status-select">
@@ -444,10 +453,7 @@ function renderBookingDetail(item) {
       ${statusOption("已取消", item["狀態"])}
     </select>
 
-    <button
-      class="save-btn"
-      onclick="saveBookingStatus('${bookingId}')"
-    >
+    <button class="save-btn" onclick="saveBookingStatus('${escapeAttr(bookingId)}')">
       更新案件狀態
     </button>
   `;
@@ -456,16 +462,16 @@ function renderBookingDetail(item) {
 function detailItem(label, value) {
   return `
     <div class="detail-item">
-      <label>${label}</label>
-      <strong>${value || "-"}</strong>
+      <label>${escapeHtml(label)}</label>
+      <strong>${escapeHtml(value || "-")}</strong>
     </div>
   `;
 }
 
 function statusOption(value, current) {
   return `
-    <option value="${value}" ${value === current ? "selected" : ""}>
-      ${value}
+    <option value="${escapeAttr(value)}" ${value === current ? "selected" : ""}>
+      ${escapeHtml(value)}
     </option>
   `;
 }
@@ -537,77 +543,141 @@ function renderAccounts(list) {
     return;
   }
 
-  let html = `
-    <table>
-      <thead>
-        <tr>
-          <th>帳號</th>
-          <th>名稱</th>
-          <th>角色</th>
-          <th>狀態</th>
-          <th>啟用</th>
-          <th>建立時間</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
+  let tableHtml = `
+    <div class="desktop-account-table">
+      <table>
+        <thead>
+          <tr>
+            <th>帳號</th>
+            <th>名稱</th>
+            <th>角色</th>
+            <th>狀態</th>
+            <th>啟用</th>
+            <th>接收通知</th>
+            <th>LINE UserId</th>
+            <th>建立時間</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
   `;
 
   list.forEach(item => {
     const username = item["帳號"] || "";
     const status = item["狀態"] || "";
-    const enabled =
-      item["啟用"] === true ||
-      String(item["啟用"]).toUpperCase() === "TRUE";
+    const role = item["角色"] || "客服";
+    const enabled = isTrue(item["啟用"]);
+    const receive = isTrue(item["接收通知"]);
 
-    html += `
+    tableHtml += `
       <tr>
-        <td>${username}</td>
-        <td>${item["名稱"] || ""}</td>
-        <td>${item["角色"] || ""}</td>
-        <td>${status}</td>
+        <td>${escapeHtml(username)}</td>
+        <td>${escapeHtml(item["名稱"] || "")}</td>
+
+        <td>
+          <select class="role-select" onchange="updateAccountRole('${escapeAttr(username)}',this.value)">
+            ${roleOption("老闆", role)}
+            ${roleOption("主管", role)}
+            ${roleOption("驗屋師", role)}
+            ${roleOption("客服", role)}
+          </select>
+        </td>
+
+        <td>${renderAccountStatus(status)}</td>
         <td>${enabled ? "TRUE" : "FALSE"}</td>
-        <td>${formatDateTime(item["建立時間"])}</td>
+
+        <td>
+          <label>
+            <input
+              type="checkbox"
+              class="notify-check"
+              ${receive ? "checked" : ""}
+              onchange="updateAccountNotification('${escapeAttr(username)}',this.checked)"
+            >
+            ${receive ? "TRUE" : "FALSE"}
+          </label>
+        </td>
+
+        <td>${escapeHtml(item["LINE UserId"] || "")}</td>
+        <td>${escapeHtml(formatDateTime(item["建立時間"]))}</td>
+
         <td>
           <div class="account-actions">
-            ${
-              status === "待審核"
-                ? `
-                  <button
-                    class="approve-btn"
-                    onclick="approveAccount('${username}')"
-                  >
-                    核准
-                  </button>
-
-                  <button
-                    class="reject-btn"
-                    onclick="rejectAccount('${username}')"
-                  >
-                    拒絕
-                  </button>
-                `
-                : `
-                  <button
-                    class="reject-btn"
-                    onclick="disableAccount('${username}')"
-                  >
-                    停用
-                  </button>
-                `
-            }
+            <button class="approve-btn" onclick="approveAccount('${escapeAttr(username)}')">核准</button>
+            <button class="reject-btn" onclick="rejectAccount('${escapeAttr(username)}')">拒絕</button>
+            <button class="disable-btn" onclick="disableAccount('${escapeAttr(username)}')">停用</button>
+            <button class="delete-btn" onclick="deleteAccount('${escapeAttr(username)}')">刪除</button>
           </div>
         </td>
       </tr>
     `;
   });
 
-  html += `
-      </tbody>
-    </table>
+  tableHtml += `
+        </tbody>
+      </table>
+    </div>
   `;
 
-  box.innerHTML = html;
+  let cardHtml = `
+    <div class="mobile-account-card">
+  `;
+
+  list.forEach(item => {
+    const username = item["帳號"] || "";
+    const status = item["狀態"] || "";
+    const role = item["角色"] || "客服";
+    const enabled = isTrue(item["啟用"]);
+    const receive = isTrue(item["接收通知"]);
+
+    cardHtml += `
+      <div class="account-card">
+        <h3>${escapeHtml(item["名稱"] || username)}</h3>
+        <p>帳號：${escapeHtml(username)}</p>
+        <p>狀態：${statusText(status)}</p>
+        <p>啟用：${enabled ? "TRUE" : "FALSE"}</p>
+        <p>LINE：${escapeHtml(item["LINE UserId"] || "未填")}</p>
+
+        <select class="role-select" onchange="updateAccountRole('${escapeAttr(username)}',this.value)">
+          ${roleOption("老闆", role)}
+          ${roleOption("主管", role)}
+          ${roleOption("驗屋師", role)}
+          ${roleOption("客服", role)}
+        </select>
+
+        <label>
+          <input
+            type="checkbox"
+            class="notify-check"
+            ${receive ? "checked" : ""}
+            onchange="updateAccountNotification('${escapeAttr(username)}',this.checked)"
+          >
+          接收 LINE 通知：${receive ? "TRUE" : "FALSE"}
+        </label>
+
+        <div class="account-actions">
+          <button class="approve-btn" onclick="approveAccount('${escapeAttr(username)}')">核准</button>
+          <button class="reject-btn" onclick="rejectAccount('${escapeAttr(username)}')">拒絕</button>
+          <button class="disable-btn" onclick="disableAccount('${escapeAttr(username)}')">停用</button>
+          <button class="delete-btn" onclick="deleteAccount('${escapeAttr(username)}')">刪除</button>
+        </div>
+      </div>
+    `;
+  });
+
+  cardHtml += `
+    </div>
+  `;
+
+  box.innerHTML = tableHtml + cardHtml;
+}
+
+function roleOption(value, current) {
+  return `
+    <option value="${escapeAttr(value)}" ${value === current ? "selected" : ""}>
+      ${escapeHtml(value)}
+    </option>
+  `;
 }
 
 async function approveAccount(username) {
@@ -645,7 +715,7 @@ async function rejectAccount(username) {
 }
 
 async function disableAccount(username) {
-  if (!confirm(`確定停用帳號：${username}？`)) return;
+  if (!confirm(`確定停用帳號：${username}？停用後會立即失效。`)) return;
 
   const result = await apiPost("disableAdmin", {
     token: adminToken,
@@ -657,6 +727,54 @@ async function disableAccount(username) {
     loadAccounts();
   } else {
     alert(result.message || "停用失敗");
+  }
+}
+
+async function deleteAccount(username) {
+  if (!confirm(`確定刪除帳號：${username}？刪除後無法復原。`)) return;
+
+  const result = await apiPost("deleteAdmin", {
+    token: adminToken,
+    username
+  });
+
+  if (result.ok) {
+    alert("已刪除");
+    loadAccounts();
+    loadDashboard();
+  } else {
+    alert(result.message || "刪除失敗");
+  }
+}
+
+async function updateAccountRole(username, role) {
+  const result = await apiPost("updateAdminRole", {
+    token: adminToken,
+    username,
+    role
+  });
+
+  if (result.ok) {
+    alert("角色已更新");
+    loadAccounts();
+  } else {
+    alert(result.message || "角色更新失敗");
+    loadAccounts();
+  }
+}
+
+async function updateAccountNotification(username, receiveNotification) {
+  const result = await apiPost("updateAdminNotification", {
+    token: adminToken,
+    username,
+    receiveNotification
+  });
+
+  if (result.ok) {
+    loadAccounts();
+  } else {
+    alert(result.message || "通知設定失敗");
+    loadAccounts();
   }
 }
 
@@ -674,7 +792,27 @@ function renderStatus(status) {
   if (s === "已完成") cls = "status-done";
   if (s === "已取消") cls = "status-cancel";
 
-  return `<span class="status ${cls}">${s}</span>`;
+  return `<span class="status ${cls}">${escapeHtml(s)}</span>`;
+}
+
+function renderAccountStatus(status) {
+  return `<span class="status ${accountStatusClass(status)}">${escapeHtml(status || "-")}</span>`;
+}
+
+function accountStatusClass(status) {
+  if (status === "已核准") return "status-done";
+  if (status === "待審核") return "status-pending";
+  if (status === "停用") return "status-disabled";
+  if (status === "已拒絕") return "status-rejected";
+  return "status-contacted";
+}
+
+function statusText(status) {
+  return status || "-";
+}
+
+function isTrue(value) {
+  return value === true || String(value).toUpperCase() === "TRUE";
 }
 
 function formatDate(value) {
@@ -699,4 +837,17 @@ function formatDateTime(value) {
   }
 
   return date.toLocaleString("zh-TW");
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value).replaceAll("`", "&#096;");
 }

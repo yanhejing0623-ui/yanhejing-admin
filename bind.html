@@ -3,16 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LINE綁定測試</title>
+<title>LINE綁定</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 
 <body style="font-family:Arial;padding:24px;">
-  <h2>LINE綁定測試頁</h2>
-  <div id="log">頁面已載入，準備初始化 LIFF...</div>
+  <h2>LINE綁定中...</h2>
+  <div id="log">準備綁定...</div>
 
 <script>
 const LIFF_ID = "2010501580-tk9UAT4D";
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbw52SYYAr81-Af6srLxGILv2avNO2IKt7MzEjPB8DYI-EhWkyM2HJ8ojnDcFuL4nAN2JA/exec";
 
 function show(msg){
   document.getElementById("log").innerHTML += "<br>" + msg;
@@ -20,36 +23,68 @@ function show(msg){
 
 async function init(){
   try{
-    show("1. 開始 liff.init");
-
-    await liff.init({
-      liffId: LIFF_ID
-    });
-
-    show("2. LIFF 初始化成功");
+    await liff.init({ liffId: LIFF_ID });
 
     if(!liff.isLoggedIn()){
-      show("3. 尚未登入，準備跳轉 LINE Login");
       liff.login();
       return;
     }
 
-    show("4. 已登入，準備取得 Profile");
-
     const profile = await liff.getProfile();
 
-    show("5. Profile 取得成功");
-    show("displayName：" + (profile.displayName || "沒有"));
-    show("userId：" + (profile.userId || "沒有抓到"));
+    let username =
+      localStorage.getItem("bind_username") ||
+      new URLSearchParams(location.search).get("username");
 
-    document.body.innerHTML += `
-      <hr>
-      <h3>完整資料</h3>
-      <pre>${JSON.stringify(profile, null, 2)}</pre>
+    if(!username){
+      username = prompt("請輸入你的後台帳號，例如 boss 或 C8");
+    }
+
+    if(!username){
+      document.body.innerHTML = "<h2>❌ 綁定失敗：沒有輸入後台帳號</h2>";
+      return;
+    }
+
+    show("LINE UserId：" + profile.userId);
+    show("後台帳號：" + username);
+    show("準備寫入系統...");
+
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "bindLine",
+        username: username,
+        userId: profile.userId
+      })
+    });
+
+    const result = await res.json();
+
+    if(!result.ok){
+      document.body.innerHTML = `
+        <h2>❌ LINE綁定失敗</h2>
+        <p>${result.message || "寫入失敗"}</p>
+        <p>後台帳號：${username}</p>
+        <p>LINE UserId：${profile.userId}</p>
+      `;
+      return;
+    }
+
+    localStorage.removeItem("bind_username");
+
+    document.body.innerHTML = `
+      <h2>✅ LINE綁定成功</h2>
+      <p>LINE名稱：${profile.displayName}</p>
+      <p>LINE UserId：${profile.userId}</p>
+      <p>已寫入後台帳號：${username}</p>
+      <button onclick="location.href='admin.html'">回後台</button>
     `;
 
   }catch(error){
-    show("❌ 錯誤：" + error.message);
+    document.body.innerHTML = `
+      <h2>❌ 綁定錯誤</h2>
+      <p>${error.message}</p>
+    `;
     console.error(error);
   }
 }

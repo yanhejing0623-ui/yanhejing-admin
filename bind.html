@@ -36,9 +36,14 @@ async function init(){
       localStorage.getItem("bind_username") ||
       new URLSearchParams(location.search).get("username");
 
-    if(!username){
-      username = prompt("請輸入你的後台帳號，例如 boss 或 C8");
-    }
+if (!username) {
+  document.body.innerHTML = `
+    <h2>❌ 綁定失敗</h2>
+    <p>請先登入後台，再點「綁定我的 LINE」。</p>
+    <button onclick="location.href='admin.html'">回後台登入</button>
+  `;
+  return;
+}
 
     if(!username){
       document.body.innerHTML = "<h2>❌ 綁定失敗：沒有輸入後台帳號</h2>";

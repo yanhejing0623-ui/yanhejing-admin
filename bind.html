@@ -6,34 +6,51 @@
 <title>LINE綁定測試</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
-<body>
-<h2>LINE綁定測試中...</h2>
+
+<body style="font-family:Arial;padding:24px;">
+  <h2>LINE綁定測試頁</h2>
+  <div id="log">頁面已載入，準備初始化 LIFF...</div>
 
 <script>
 const LIFF_ID = "2010501580-tk9UAT4D";
 
-async function init() {
-  try {
-    await liff.init({ liffId: LIFF_ID });
+function show(msg){
+  document.getElementById("log").innerHTML += "<br>" + msg;
+}
 
-    if (!liff.isLoggedIn()) {
+async function init(){
+  try{
+    show("1. 開始 liff.init");
+
+    await liff.init({
+      liffId: LIFF_ID
+    });
+
+    show("2. LIFF 初始化成功");
+
+    if(!liff.isLoggedIn()){
+      show("3. 尚未登入，準備跳轉 LINE Login");
       liff.login();
       return;
     }
 
+    show("4. 已登入，準備取得 Profile");
+
     const profile = await liff.getProfile();
 
-    document.body.innerHTML = `
-      <h2>LIFF 測試結果</h2>
-      <p>displayName：${profile.displayName || "沒有"}</p>
-      <p>userId：${profile.userId || "沒有抓到"}</p>
+    show("5. Profile 取得成功");
+    show("displayName：" + (profile.displayName || "沒有"));
+    show("userId：" + (profile.userId || "沒有抓到"));
+
+    document.body.innerHTML += `
+      <hr>
+      <h3>完整資料</h3>
       <pre>${JSON.stringify(profile, null, 2)}</pre>
     `;
-  } catch (error) {
-    document.body.innerHTML = `
-      <h2>錯誤</h2>
-      <p>${error.message}</p>
-    `;
+
+  }catch(error){
+    show("❌ 錯誤：" + error.message);
+    console.error(error);
   }
 }
 

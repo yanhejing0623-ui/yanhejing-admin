@@ -3,27 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>LINE綁定</title>
-
+<title>LINE綁定測試</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
-
 <body>
-
-<h2>LINE綁定中...</h2>
+<h2>LINE綁定測試中...</h2>
 
 <script>
 const LIFF_ID = "2010501580-tk9UAT4D";
 
-const API_URL =
-"https://script.google.com/macros/s/AKfycbw52SYYAr81-Af6srLxGILv2avNO2IKt7MzEjPB8DYI-EhWkyM2HJ8ojnDcFuL4nAN2JA/exec";
-
 async function init() {
   try {
-    await liff.init({
-      liffId: LIFF_ID
-    });
+    await liff.init({ liffId: LIFF_ID });
 
     if (!liff.isLoggedIn()) {
       liff.login();
@@ -32,53 +23,15 @@ async function init() {
 
     const profile = await liff.getProfile();
 
-    const username =
-      localStorage.getItem("bind_username") ||
-      new URLSearchParams(location.search).get("username");
-
-    if (!username) {
-      document.body.innerHTML = `
-        <h2>❌ 綁定失敗</h2>
-        <p>找不到後台帳號，請先從後台點「綁定LINE」。</p>
-      `;
-      return;
-    }
-
-    const res = await fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "bindLine",
-        username: username,
-        userId: profile.userId,
-        displayName: profile.displayName
-      })
-    });
-
-    const result = await res.json();
-
-    if (!result.ok) {
-      document.body.innerHTML = `
-        <h2>❌ 綁定失敗</h2>
-        <p>${result.message || "寫入失敗"}</p>
-      `;
-      return;
-    }
-
-    localStorage.removeItem("bind_username");
-
     document.body.innerHTML = `
-      <h2>✅ LINE綁定成功</h2>
-      <p>${profile.displayName}</p>
-      <p>${profile.userId}</p>
-      <p>已寫入後台帳號：${username}</p>
-      <button onclick="location.href='admin.html'">回後台</button>
+      <h2>LIFF 測試結果</h2>
+      <p>displayName：${profile.displayName || "沒有"}</p>
+      <p>userId：${profile.userId || "沒有抓到"}</p>
+      <pre>${JSON.stringify(profile, null, 2)}</pre>
     `;
-
   } catch (error) {
-    console.error(error);
-
     document.body.innerHTML = `
-      <h2>❌ 綁定失敗</h2>
+      <h2>錯誤</h2>
       <p>${error.message}</p>
     `;
   }
@@ -86,6 +39,5 @@ async function init() {
 
 init();
 </script>
-
 </body>
 </html>

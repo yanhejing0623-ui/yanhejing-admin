@@ -14,32 +14,77 @@
 <h2>LINE綁定中...</h2>
 
 <script>
-
 const LIFF_ID = "2010501580-tk9UAT4D";
 
-async function init(){
+const API_URL =
+"https://script.google.com/macros/s/AKfycbywgbwW0jxYuLCboHD0TdM8aUynDTZ3dxpUg20Qqam2zJN7d2sCj5ri_iHPaqfqpSPSzQ/exec";
 
-  await liff.init({
-    liffId: LIFF_ID
-  });
+async function init() {
+  try {
+    await liff.init({
+      liffId: LIFF_ID
+    });
 
-  if(!liff.isLoggedIn()){
-    liff.login();
-    return;
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      return;
+    }
+
+    const profile = await liff.getProfile();
+
+    const username =
+      localStorage.getItem("bind_username") ||
+      new URLSearchParams(location.search).get("username");
+
+    if (!username) {
+      document.body.innerHTML = `
+        <h2>❌ 綁定失敗</h2>
+        <p>找不到後台帳號，請先從後台點「綁定LINE」。</p>
+      `;
+      return;
+    }
+
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "bindLine",
+        username: username,
+        userId: profile.userId,
+        displayName: profile.displayName
+      })
+    });
+
+    const result = await res.json();
+
+    if (!result.ok) {
+      document.body.innerHTML = `
+        <h2>❌ 綁定失敗</h2>
+        <p>${result.message || "寫入失敗"}</p>
+      `;
+      return;
+    }
+
+    localStorage.removeItem("bind_username");
+
+    document.body.innerHTML = `
+      <h2>✅ LINE綁定成功</h2>
+      <p>${profile.displayName}</p>
+      <p>${profile.userId}</p>
+      <p>已寫入後台帳號：${username}</p>
+      <button onclick="location.href='admin.html'">回後台</button>
+    `;
+
+  } catch (error) {
+    console.error(error);
+
+    document.body.innerHTML = `
+      <h2>❌ 綁定失敗</h2>
+      <p>${error.message}</p>
+    `;
   }
-
-  const profile = await liff.getProfile();
-
-  document.body.innerHTML = `
-    <h2>綁定成功</h2>
-    <p>${profile.displayName}</p>
-    <p>${profile.userId}</p>
-  `;
-
 }
 
 init();
-
 </script>
 
 </body>
